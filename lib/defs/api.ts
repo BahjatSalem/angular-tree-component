@@ -26,6 +26,17 @@ export interface ITreeState {
 
 export interface ITreeOptions {
    /**
+    * A string representing the attribute of the node that indicates whether there are child nodes.
+
+    * **Default value: `hasChildren`.**
+
+    For example, if your nodes have an `isDirectory` attribute that indicates whether there are children, use:
+    ```
+      options = { hasChildrenField: 'isDirectory' }
+    ```
+    */
+   hasChildrenField?: string;
+   /**
     * A string representing the attribute of the node that contains the array of children.
 
     * **Default value: `children`.**
@@ -74,7 +85,8 @@ export interface ITreeOptions {
     * Function for loading a node's children.
       The function receives a TreeNode, and returns a value or a promise that resolves to the node's children.
 
-      This function will be called whenever a node is expanded, the `hasChildren` field is true, and the `children` field is empty.
+      This function will be called whenever a node is expanded, the `hasChildren` (`options.hasChildrenField`)
+      field is true, and the `children` field is empty.
       The result will be loaded into the node's children attribute.
 
       Example:
@@ -201,7 +213,7 @@ export interface ITreeOptions {
     */
    animateAcceleration?: number;
    /**
-    * Whether to scroll to the node to make it visible when it is selected.
+    * Whether to scroll to the node to make it visible when it is selected / activated.
 
     * **Default Value: true**
     */
@@ -235,6 +247,10 @@ export interface ITreeOptions {
      * Specifies id of root node (virtualRoot)
      */
     rootId?: any;
+    /**
+     * Whether to display a checkbox next to the node or not
+     */
+    useCheckbox?: boolean;
  }
 
 export interface ITreeNode {

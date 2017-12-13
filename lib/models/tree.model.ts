@@ -25,6 +25,7 @@ export class TreeModel implements ITreeModel {
 
   @observable roots: TreeNode[];
   @observable expandedNodeIds: IDTypeDictionary = {};
+  @observable selectedLeafNodeIds: IDTypeDictionary = {};
   @observable activeNodeIds: IDTypeDictionary = {};
   @observable hiddenNodeIds: IDTypeDictionary = {};
   @observable focusedNodeId: IDType = null;
@@ -155,6 +156,10 @@ export class TreeModel implements ITreeModel {
     return this.activeNodeIds[node.id];
   }
 
+  isSelected(node) {
+    return this.selectedLeafNodeIds[node.id];
+  }
+
   // actions
   @action setData({ nodes, options = null, events = null }: {nodes: any, options: any, events: any}) {
     if (options) {
@@ -254,6 +259,17 @@ export class TreeModel implements ITreeModel {
       this.fireEvent({ eventName: TREE_EVENTS.activate, node });
     } else {
       this.fireEvent({ eventName: TREE_EVENTS.deactivate, node });
+    }
+  }
+
+  @action setSelectedNode(node, value) {
+    this.selectedLeafNodeIds = Object.assign({}, this.selectedLeafNodeIds, {[node.id]: value});
+
+    if (value) {
+      node.focus();
+      this.fireEvent({ eventName: TREE_EVENTS.select, node });
+    } else {
+      this.fireEvent({ eventName: TREE_EVENTS.deselect, node });
     }
   }
 
@@ -377,6 +393,7 @@ export class TreeModel implements ITreeModel {
   getState() {
     return {
       expandedNodeIds: this.expandedNodeIds,
+      selectedLeafNodeIds: this.selectedLeafNodeIds,
       activeNodeIds: this.activeNodeIds,
       hiddenNodeIds: this.hiddenNodeIds,
       focusedNodeId: this.focusedNodeId
@@ -388,6 +405,7 @@ export class TreeModel implements ITreeModel {
 
     Object.assign(this, {
       expandedNodeIds: state.expandedNodeIds || {},
+      selectedLeafNodeIds: state.selectedLeafNodeIds || {},
       activeNodeIds: state.activeNodeIds || {},
       hiddenNodeIds: state.hiddenNodeIds || {},
       focusedNodeId: state.focusedNodeId

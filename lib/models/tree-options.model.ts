@@ -12,8 +12,9 @@ export interface IActionHandler {
 }
 
 export const TREE_ACTIONS = {
-  TOGGLE_SELECTED: (tree: TreeModel, node: TreeNode, $event: any) => node && node.toggleActivated(),
-  TOGGLE_SELECTED_MULTI: (tree: TreeModel, node: TreeNode, $event: any) => node && node.toggleActivated(true),
+  TOGGLE_ACTIVE: (tree: TreeModel, node: TreeNode, $event: any) => node && node.toggleActivated(),
+  TOGGLE_ACTIVE_MULTI: (tree: TreeModel, node: TreeNode, $event: any) => node && node.toggleActivated(true),
+  TOGGLE_SELECTED: (tree: TreeModel, node: TreeNode, $event: any) => node && node.toggleSelected(),
   SELECT: (tree: TreeModel, node: TreeNode, $event: any) => node.setIsActive(true),
   DESELECT: (tree: TreeModel, node: TreeNode, $event: any) => node.setIsActive(false),
   FOCUS: (tree: TreeModel, node: TreeNode, $event: any) => node.focus(),
@@ -36,10 +37,11 @@ export const TREE_ACTIONS = {
 
 const defaultActionMapping: IActionMapping = {
   mouse: {
-    click: TREE_ACTIONS.TOGGLE_SELECTED,
+    click: TREE_ACTIONS.TOGGLE_ACTIVE,
     dblClick: null,
     contextMenu: null,
     expanderClick: TREE_ACTIONS.TOGGLE_EXPANDED,
+    checkboxClick: TREE_ACTIONS.TOGGLE_SELECTED,
     drop: TREE_ACTIONS.MOVE_NODE
   },
   keys: {
@@ -47,8 +49,8 @@ const defaultActionMapping: IActionMapping = {
     [KEYS.LEFT]: TREE_ACTIONS.DRILL_UP,
     [KEYS.DOWN]: TREE_ACTIONS.NEXT_NODE,
     [KEYS.UP]: TREE_ACTIONS.PREVIOUS_NODE,
-    [KEYS.SPACE]: TREE_ACTIONS.TOGGLE_SELECTED,
-    [KEYS.ENTER]: TREE_ACTIONS.TOGGLE_SELECTED
+    [KEYS.SPACE]: TREE_ACTIONS.TOGGLE_ACTIVE,
+    [KEYS.ENTER]: TREE_ACTIONS.TOGGLE_ACTIVE
   }
 };
 
@@ -58,6 +60,7 @@ export interface IActionMapping {
     dblClick?: IActionHandler,
     contextMenu?: IActionHandler,
     expanderClick?: IActionHandler,
+    checkboxClick?: IActionHandler,
     dragStart?: IActionHandler,
     drag?: IActionHandler,
     dragEnd?: IActionHandler,
@@ -72,6 +75,7 @@ export interface IActionMapping {
 }
 
 export class TreeOptions {
+  get hasChildrenField(): string { return this.options.hasChildrenField || 'hasChildren'; }
   get childrenField(): string { return this.options.childrenField || 'children'; }
   get displayField(): string { return this.options.displayField || 'name'; }
   get idField(): string { return this.options.idField || 'id'; }
@@ -80,11 +84,12 @@ export class TreeOptions {
   get levelPadding(): number { return this.options.levelPadding || 0; }
   get useVirtualScroll(): boolean { return this.options.useVirtualScroll; }
   get animateExpand(): boolean { return this.options.animateExpand; }
-  get animateSpeed(): number { return this.options.animateSpeed || 30; }
+  get animateSpeed(): number { return this.options.animateSpeed || 1; }
   get animateAcceleration(): number { return this.options.animateAcceleration || 1.2; }
   get scrollOnSelect(): boolean { return this.options.scrollOnSelect === undefined ? true : this.options.scrollOnSelect; }
   get rtl(): boolean { return !!this.options.rtl; }
   get rootId(): any {return this.options.rootId; }
+  get useCheckbox(): boolean { return this.options.useCheckbox; }
   actionMapping: IActionMapping;
 
   constructor(private options: ITreeOptions = {}) {
@@ -140,6 +145,6 @@ export class TreeOptions {
   }
 
   get dropSlotHeight(): number {
-    return this.options.dropSlotHeight || 2;
+    return _.isNumber(this.options.dropSlotHeight) ? this.options.dropSlotHeight : 2;
   }
 }

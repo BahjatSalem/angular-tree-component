@@ -12,8 +12,8 @@ const actionMapping:IActionMapping = {
     },
     click: (tree, node, $event) => {
       $event.shiftKey
-        ? TREE_ACTIONS.TOGGLE_SELECTED_MULTI(tree, node, $event)
-        : TREE_ACTIONS.TOGGLE_SELECTED(tree, node, $event)
+        ? TREE_ACTIONS.TOGGLE_ACTIVE_MULTI(tree, node, $event)
+        : TREE_ACTIONS.TOGGLE_ACTIVE(tree, node, $event)
     }
   },
   keys: {
@@ -47,7 +47,6 @@ const actionMapping:IActionMapping = {
       [focused]="true"
       (event)="onEvent($event)"
       (initialized)="onInitialized(tree)"
-      
     >
       <ng-template #treeNodeTemplate let-node>
         <span title="{{node.data.subTitle}}">{{ node.data.name }}</span>
@@ -226,9 +225,7 @@ export class FullTreeComponent {
       return true;
     },
     useVirtualScroll: true,
-    animateExpand: true,
-    animateSpeed: 30,
-    animateAcceleration: 1.2
+    animateExpand: true
   }
   onEvent(event) {
     console.log(event);
